@@ -29,19 +29,6 @@
 module ProjectsHelper
   include WorkPackagesFilterHelper
 
-  # Just like sort_header tag but removes sorting by
-  # lft from the sort criteria as lft is mutually exclusive with
-  # the other criteria.
-  def projects_sort_header_tag(*)
-    former_criteria = @sort_criteria.criteria.dup
-
-    @sort_criteria.criteria.reject! { |a, _| a == "lft" }
-
-    sort_header_tag(*)
-  ensure
-    @sort_criteria.criteria = former_criteria
-  end
-
   def short_project_description(project, length = 255)
     if project.description.blank?
       return ""
