@@ -37,7 +37,7 @@ class Queries::Projects::Orders::LatestActivityAtOrder < Queries::Orders::Base
 
   def order(scope)
     with_raise_on_invalid do
-      scope.order(Arel.sql("activity.latest_activity_at").send(direction))
+      scope.order(Arel.sql(Queries::Projects::Selects::LatestActivityAt.column_sql).send(direction))
     end
   end
 end
