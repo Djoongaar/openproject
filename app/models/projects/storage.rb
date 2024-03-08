@@ -64,13 +64,13 @@ module Projects::Storage
     def with_required_storage
       Project
         .from("#{Project.table_name} projects")
-        .joins("LEFT JOIN (#{wiki_storage_sql}) wiki ON projects.id = wiki.project_id")
-        .joins("LEFT JOIN (#{work_package_sql}) wp ON projects.id = wp.project_id")
-        .joins("LEFT JOIN #{Repository.table_name} repos ON repos.project_id = projects.id")
+        .joins("LEFT JOIN (#{wiki_storage_sql}) wiki_size ON projects.id = wiki_size.project_id")
+        .joins("LEFT JOIN (#{work_package_sql}) work_package_size ON projects.id = work_package_size.project_id")
+        .joins("LEFT JOIN #{Repository.table_name} repository_size ON projects.id = repository_size.project_id")
         .select("projects.*")
-        .select("wiki.filesize AS wiki_required_space")
-        .select("wp.filesize AS work_package_required_space")
-        .select("repos.required_storage_bytes AS repositories_required_space")
+        .select("wiki_size.filesize AS wiki_required_space")
+        .select("work_package_size.filesize AS work_package_required_space")
+        .select("repository_size.required_storage_bytes AS repositories_required_space")
         .select("#{required_disk_space_sum} AS required_disk_space")
     end
 
@@ -83,30 +83,32 @@ module Projects::Storage
     end
 
     def required_disk_space_sum
-      "(COALESCE(wiki.filesize, 0) + COALESCE(wp.filesize, 0) + COALESCE(repos.required_storage_bytes, 0))"
+      <<~SQL.squish
+        (COALESCE(wiki_size.filesize, 0) +
+        COALESCE(work_package_size.filesize, 0) +
+        COALESCE(repository_size.required_storage_bytes, 0))
+      SQL
     end
 
-    private
-
     def wiki_storage_sql
-      <<-SQL
-      SELECT wiki.project_id, SUM(wiki_attached.filesize) AS filesize
-      FROM #{Wiki.table_name} wiki
-      JOIN #{WikiPage.table_name} pages
-        ON pages.wiki_id = wiki.id
-      JOIN #{Attachment.table_name} wiki_attached
-        ON (wiki_attached.container_id = pages.id AND wiki_attached.container_type = 'WikiPage')
-      GROUP BY wiki.project_id
+      <<~SQL.squish
+        SELECT wiki.project_id, SUM(wiki_attached.filesize) AS filesize
+        FROM #{Wiki.table_name} wiki
+        JOIN #{WikiPage.table_name} pages
+          ON pages.wiki_id = wiki.id
+        JOIN #{Attachment.table_name} wiki_attached
+          ON (wiki_attached.container_id = pages.id AND wiki_attached.container_type = 'WikiPage')
+        GROUP BY wiki.project_id
       SQL
     end
 
     def work_package_sql
-      <<-SQL
-      SELECT wp.project_id, SUM(wp_attached.filesize) AS filesize
-      FROM #{WorkPackage.table_name} wp
-      JOIN #{Attachment.table_name} wp_attached
-        ON (wp_attached.container_id = wp.id AND wp_attached.container_type = 'WorkPackage')
-      GROUP BY wp.project_id
+      <<~SQL.squish
+        SELECT wp.project_id, SUM(wp_attached.filesize) AS filesize
+        FROM #{WorkPackage.table_name} wp
+        JOIN #{Attachment.table_name} wp_attached
+          ON (wp_attached.container_id = wp.id AND wp_attached.container_type = 'WorkPackage')
+        GROUP BY wp.project_id
       SQL
     end
   end
