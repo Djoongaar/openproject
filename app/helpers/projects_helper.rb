@@ -41,7 +41,7 @@ module ProjectsHelper
     @projects_columns_options ||= ::Queries::Projects::ProjectQuery
                                     .new
                                     .available_selects
-                                    .reject { |c| c.attribute == :hierarchy }
+                                    .reject { |c| c.attribute == :lft }
                                     .sort_by(&:caption)
                                     .map { |c| { id: c.attribute, name: c.caption } }
   end
