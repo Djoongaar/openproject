@@ -142,7 +142,7 @@ RSpec.describe SortHelper do
     it "renders a th with a sort link" do
       expect(output).to be_html_eql(%{
         <th title="Sort by &quot;Id&quot;">
-          <div class="generic-table--sort-header-outer">
+          <div class="generic-table--sort-header-outer ">
             <div class="generic-table--sort-header">
               <span>
                 <a href="/work_packages?sort=sort_criteria_params"
@@ -160,7 +160,7 @@ RSpec.describe SortHelper do
       it "adds the sort class" do
         expect(output).to be_html_eql(%{
           <th title="Ascending sorted by &quot;Id&quot;">
-            <div class="generic-table--sort-header-outer">
+            <div class="generic-table--sort-header-outer ">
               <div class="generic-table--sort-header">
                 <span class="sort asc">
                   <a href="/work_packages?sort=sort_criteria_params"
@@ -180,7 +180,7 @@ RSpec.describe SortHelper do
       it "adds the sort class" do
         expect(output).to be_html_eql(%{
           <th title="Descending sorted by &quot;Id&quot;">
-            <div class="generic-table--sort-header-outer">
+            <div class="generic-table--sort-header-outer ">
               <div class="generic-table--sort-header">
                 <span class="sort desc">
                   <a href="/work_packages?sort=sort_criteria_params"
