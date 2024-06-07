@@ -58,6 +58,7 @@ module Storages
                                                        description: I18n.t("storages.connection_validation.success")))
 
         respond_to do |format|
+          binding.pry
           format.turbo_stream
         end
       end
@@ -147,7 +148,7 @@ module Storages
         return None() if query.success?
 
         Rails.logger.error("Connection validation failed with unknown error:\n\t" \
-                           "status: #{query.result}\n\tresponse: #{query.error_payload}")
+                             "status: #{query.result}\n\tresponse: #{query.error_payload}")
 
         Some(ConnectionValidation.new(icon: :skip,
                                       scheme: :danger,

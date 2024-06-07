@@ -27,6 +27,8 @@ See COPYRIGHT and LICENSE files for more details.
 
 ++#%>
 
+<% binding.pry %>
+
 <%= turbo_stream.update :connection_validation_result do %>
   <%= render(Primer::Alpha::Banner.new(icon: @result.icon, scheme: @result.scheme)) { @result.description } %>
 <% end %>
