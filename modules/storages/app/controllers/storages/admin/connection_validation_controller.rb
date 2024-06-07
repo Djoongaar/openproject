@@ -58,7 +58,6 @@ module Storages
                                                        description: I18n.t("storages.connection_validation.success")))
 
         respond_to do |format|
-          binding.pry
           format.turbo_stream
         end
       end
