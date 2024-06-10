@@ -85,7 +85,20 @@ module OpenProject
       end
 
       def permissible_on?(context_type)
-        @permissible_on.include?(context_type)
+        context_symbol = case context_type
+                         when WorkPackage
+                           :work_package
+                         when Project
+                           :project
+                         when Symbol
+                           context_type
+                         when nil
+                           :global
+                         else
+                           raise "Unknown context: #{context_type}"
+                         end
+
+        @permissible_on.include?(context_symbol)
       end
 
       def grant_to_admin?
