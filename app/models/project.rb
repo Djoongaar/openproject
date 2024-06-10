@@ -420,6 +420,13 @@ class Project < ApplicationRecord
     end
   end
 
+  def reload(*)
+    @allowed_permissions = nil
+    @allowed_actions = nil
+
+    super
+  end
+
   def allowed_permissions
     @allowed_permissions ||=
       begin
